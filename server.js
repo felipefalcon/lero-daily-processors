@@ -3,7 +3,7 @@
   var mongo = require('mongodb'); 
   var schedule = require('node-schedule');
 
-  var port = process.env.PORT || 8080;
+  var port = 8080;
 
   const server = http.createServer((req, res) => {
     res.statusCode = 200;
