@@ -1,19 +1,6 @@
   
-  const http = require('http');
   var mongo = require('mongodb'); 
   var schedule = require('node-schedule');
-
-  var port = 8080;
-
-  const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello World');
-  });
-  
-  server.listen(port, '0.0.0.0', () => {
-    console.log('Server running');
-  });
 
   const dbName = "leRo_DB";
 	const MongoClient = mongo.MongoClient;
@@ -87,6 +74,6 @@
       }
   }
 
-  var j = schedule.scheduleJob('/30 * * * * *', function(){
+  var j = schedule.scheduleJob('*/30 * * * * *', function(){
     process();
   });
