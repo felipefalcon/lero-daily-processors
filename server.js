@@ -4,8 +4,8 @@
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
 
-  // Roda a cada 25 minutos - essa variável intervalTimeout é o tempo em ms
-  let intervalTimeout = 1500000;
+  // Roda a cada 5 minutos - essa variável intervalTimeout é o tempo em ms
+  let intervalTimeout = 300000;
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
@@ -23,6 +23,7 @@
 
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
   function process() {
+      today = new Date();
       console.log("\nPróximo processamento: "+ nextRun.toLocaleDateString());
 
       if (today.toLocaleDateString() == nextRun.toLocaleDateString()) {
@@ -34,7 +35,7 @@
         yersteday.setMinutes(0);
         yersteday.setSeconds(0);
         yersteday.setMilliseconds(0);
-        console.log("Rodando processo para finalizar eventos da data: "+ yersteday.toLocaleDateString()); 
+        console.log("Rodando processo para finalizar eventos de datas anteriores a: "+ yersteday.toLocaleDateString()); 
 
         MongoClient.connect(url, paramsM, function(err, db) {
           if (err) throw err;
@@ -65,6 +66,7 @@
 
             console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
             console.log("Eventos da data: "+ yersteday.toLocaleDateString() + " finalizados com sucesso. ");
+            nextRun = new Date();
             nextRun.setDate(nextRun.getDate()+1);
             console.log("Próximo processamento: "+ nextRun.toLocaleDateString());
             
