@@ -66,7 +66,7 @@
               console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
               console.log("Eventos com data menor que "+ today.toLocaleDateString() + " finalizados com sucesso. ");
             }else{
-              console.log(" Não há eventos para finalizar. ");
+              console.log("Não há eventos para finalizar. ");
             }
             nextRun = new Date();
             nextRun.setDate(nextRun.getDate()+1);
