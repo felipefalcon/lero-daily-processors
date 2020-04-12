@@ -1,5 +1,7 @@
-  const dbName = "leRo_DB";
   var mongo = require('mongodb'); 
+  var schedule = require('node-schedule');
+
+  const dbName = "leRo_DB";
 	const MongoClient = mongo.MongoClient;
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -11,7 +13,6 @@
   // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
   let nextRun = new Date();
   let today = new Date();
-  let count = 9999999;
   today.setHours(0);
   today.setMinutes(0);
   today.setSeconds(0);
@@ -24,9 +25,6 @@
 
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
   function process() {
-    count += 30000;
-    console.log("...");
-    if(count <= intervalTimeout) return process();
       today = new Date();
       today.setHours(0);
       today.setMinutes(0);
@@ -74,8 +72,8 @@
           });
         }); 
       } 
-      count = 0;
-      process()
   }
 
-  process();
+  var j = schedule.scheduleJob('*/5 * * * *', function(){
+    process();
+  });
