@@ -22,7 +22,7 @@
 
 
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
-  function process() {
+  function processRun() {
       today = new Date();
       today.setHours(0);
       today.setMinutes(0);
@@ -74,6 +74,6 @@
       }
   }
 
-  var j = schedule.scheduleJob('*/10 * * * * *', function(){
-    process();
+  schedule.scheduleJob(process.env.CRON_JOB, function(){
+    processRun();
   });
