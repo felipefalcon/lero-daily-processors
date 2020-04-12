@@ -54,7 +54,7 @@
                 dateEvent.setMinutes(0);
                 dateEvent.setSeconds(0);
                 dateEvent.setMilliseconds(0);
-                if(dateEvent.getTime() <= today.getTime()){
+                if(dateEvent.getTime() < today.getTime()){
                   countEventsToUpdate++;
                   let eventId = new require('mongodb').ObjectID(event._id);
                   dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 2}}, {upsert: true}, function(err, result) {
