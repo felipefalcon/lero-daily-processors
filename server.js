@@ -71,9 +71,11 @@
             
           });
         }); 
-      } 
+      }else{
+        console.log("Próximo processamento: "+ nextRun.toLocaleDateString());
+      }
   }
 
-  var j = schedule.scheduleJob('*/5 * * * *', function(){
+  var j = schedule.scheduleJob('/30 * * * * *', function(){
     process();
   });
