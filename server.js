@@ -4,13 +4,14 @@
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
 
-  // Roda a cada 5 minutos - essa variável intervalTimeout é o tempo em ms
-  let intervalTimeout = 300000;
+  // Roda a cada 25 minutos - essa variável intervalTimeout é o tempo em ms
+  let intervalTimeout = 1500000;
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
   let nextRun = new Date();
   let today = new Date();
+  let count = 0;
   today.setHours(0);
   today.setMinutes(0);
   today.setSeconds(0);
@@ -23,6 +24,8 @@
 
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
   function process() {
+    count += 30000;
+    if(count <= intervalTimeout) return;
       today = new Date();
       console.log("\nPróximo processamento: "+ nextRun.toLocaleDateString());
 
@@ -73,8 +76,9 @@
           });
         }); 
       } 
+      count = 0;
   }
 
   process();
 
-  setInterval(process, intervalTimeout);
+  setInterval(process, 30000);
