@@ -25,18 +25,18 @@
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
   function process() {
     count += 30000;
+    console.log("...");
     if(count <= intervalTimeout) return;
       today = new Date();
       today.setHours(0);
       today.setMinutes(0);
       today.setSeconds(0);
       today.setMilliseconds(0);
-      console.log("\nPróximo processamento: "+ nextRun.toLocaleDateString());
 
       if (today.toLocaleDateString() == nextRun.toLocaleDateString()) {
 
         let countEventsToUpdate = 0;
-        console.log("Rodando processo para finalizar eventos de datas anteriores a "+ today.toLocaleDateString() + " ..."); 
+        console.log("\nRodando processo para finalizar eventos de datas anteriores a "+ today.toLocaleDateString() + " ..."); 
 
         MongoClient.connect(url, paramsM, function(err, db) {
           if (err) throw err;
