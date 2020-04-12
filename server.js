@@ -1,13 +1,24 @@
+  
+  const http = require('http');
   var mongo = require('mongodb'); 
   var schedule = require('node-schedule');
+
+  var port = process.env.PORT || 8080;
+
+  const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Hello World');
+  });
+  
+  server.listen(port, '0.0.0.0', () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+  });
 
   const dbName = "leRo_DB";
 	const MongoClient = mongo.MongoClient;
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
-
-  // Roda a cada 25 minutos - essa variável intervalTimeout é o tempo em ms
-  let intervalTimeout = 1500000;
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
