@@ -26,7 +26,7 @@
   function process() {
     count += 30000;
     console.log("...");
-    if(count <= intervalTimeout) return;
+    if(count <= intervalTimeout) return process();
       today = new Date();
       today.setHours(0);
       today.setMinutes(0);
@@ -75,8 +75,7 @@
         }); 
       } 
       count = 0;
+      process()
   }
 
   process();
-
-  setInterval(process, 30000);
