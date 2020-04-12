@@ -1,0 +1,78 @@
+  const dbName = "leRo_DB";
+  var mongo = require('mongodb'); 
+	const MongoClient = mongo.MongoClient;
+  const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
+  const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
+
+  // Roda a cada 25 minutos - essa variável intervalTimeout é o tempo em ms
+  let intervalTimeout = 1500000;
+
+  // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
+  // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
+  let nextRun = new Date();
+  let today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  nextRun.setHours(0);
+  nextRun.setMinutes(0);
+  nextRun.setSeconds(0);
+  nextRun.setMilliseconds(0);
+
+
+  // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
+  function process() {
+      console.log("\nPróximo processamento: "+ nextRun.toLocaleDateString());
+
+      if (today.toLocaleDateString() == nextRun.toLocaleDateString()) {
+
+        let yersteday = new Date();
+        let countEventsToUpdate = 0;
+        yersteday.setDate(today.getDate()-1);
+        yersteday.setHours(0);
+        yersteday.setMinutes(0);
+        yersteday.setSeconds(0);
+        yersteday.setMilliseconds(0);
+        console.log("Rodando processo para finalizar eventos da data: "+ yersteday.toLocaleDateString()); 
+
+        MongoClient.connect(url, paramsM, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db(dbName);
+
+          dbo.collection("events").find({status: {$eq: 0}}, {projection: {status: 1, data: 1}}).toArray(function(err, result) {
+            if (err) throw err;
+
+            if(result){
+              let i = 0;
+              for(i = 0; i < countEventsToUpdate; ++i){
+                let event = result[i];
+                let dateEvent = new Date(event.data);
+                dateEvent.setHours(0);
+                dateEvent.setMinutes(0);
+                dateEvent.setSeconds(0);
+                dateEvent.setMilliseconds(0);
+                if(dateEvent.getTime() <= yersteday.getTime()){
+                  countEventsToUpdate++;
+                  let eventId = new require('mongodb').ObjectID(event._id);
+                  dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 2}}, {upsert: true}, function(err, result) {
+                    if (err) throw err;
+                  });
+                }
+              }
+              if(i+1 == countEventsToUpdate) db.close();
+            }
+
+            console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
+            console.log("Eventos da data: "+ yersteday.toLocaleDateString() + " finalizados com sucesso. ");
+            nextRun.setDate(nextRun.getDate()+1);
+            console.log("Próximo processamento: "+ nextRun.toLocaleDateString());
+            
+          });
+        }); 
+      } 
+  }
+
+  process();
+
+  setInterval(process, intervalTimeout);
