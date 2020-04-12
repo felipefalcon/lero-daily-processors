@@ -11,7 +11,7 @@
   // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
   let nextRun = new Date();
   let today = new Date();
-  let count = 0;
+  let count = 9999999;
   today.setHours(0);
   today.setMinutes(0);
   today.setSeconds(0);
