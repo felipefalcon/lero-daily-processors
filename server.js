@@ -32,7 +32,7 @@
       if (today.toLocaleDateString() == nextRun.toLocaleDateString()) {
 
         let countEventsToUpdate = 0;
-        console.log("\nRodando processo para finalizar eventos de datas anteriores a "+ today.toLocaleDateString() + " ..."); 
+        console.log("\nRodando processo na data de "+ today.toLocaleDateString() + " ..."); 
 
         MongoClient.connect(url, paramsM, function(err, db) {
           if (err) throw err;
@@ -43,7 +43,7 @@
 
             if(result){
               let i = 0;
-              for(i = 0; i < countEventsToUpdate; ++i){
+              for(i = 0; i < result.length; ++i){
                 let event = result[i];
                 let dateEvent = new Date(event.data);
                 dateEvent.setHours(0);
@@ -52,6 +52,7 @@
                 dateEvent.setMilliseconds(0);
                 if(dateEvent.getTime() < today.getTime()){
                   countEventsToUpdate++;
+                  console.log("\nFinalizando eventos de datas anteriores a "+ today.toLocaleDateString() + " ..."); 
                   let eventId = new require('mongodb').ObjectID(event._id);
                   dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 2}}, {upsert: true}, function(err, result) {
                     if (err) throw err;
@@ -61,8 +62,12 @@
               if(i+1 == countEventsToUpdate) db.close();
             }
 
-            console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
-            console.log("Eventos com data menor que "+ today.toLocaleDateString() + " finalizados com sucesso. ");
+            if(countEventsToUpdate > 0){
+              console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
+              console.log("Eventos com data menor que "+ today.toLocaleDateString() + " finalizados com sucesso. ");
+            }else{
+              console.log(" Não há eventos para finalizar. ");
+            }
             nextRun = new Date();
             nextRun.setDate(nextRun.getDate()+1);
             console.log("Próximo processamento: "+ nextRun.toLocaleDateString());
