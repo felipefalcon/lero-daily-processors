@@ -74,6 +74,6 @@
       }
   }
 
-  var j = schedule.scheduleJob('*/30 * * * * *', function(){
+  var j = schedule.scheduleJob('*/10 * * * * *', function(){
     process();
   });
