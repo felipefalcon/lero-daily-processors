@@ -27,18 +27,16 @@
     count += 30000;
     if(count <= intervalTimeout) return;
       today = new Date();
+      today.setHours(0);
+      today.setMinutes(0);
+      today.setSeconds(0);
+      today.setMilliseconds(0);
       console.log("\nPróximo processamento: "+ nextRun.toLocaleDateString());
 
       if (today.toLocaleDateString() == nextRun.toLocaleDateString()) {
 
-        let yersteday = new Date();
         let countEventsToUpdate = 0;
-        yersteday.setDate(today.getDate()-1);
-        yersteday.setHours(0);
-        yersteday.setMinutes(0);
-        yersteday.setSeconds(0);
-        yersteday.setMilliseconds(0);
-        console.log("Rodando processo para finalizar eventos de datas anteriores a: "+ yersteday.toLocaleDateString()); 
+        console.log("Rodando processo para finalizar eventos de datas anteriores a "+ today.toLocaleDateString() + " ..."); 
 
         MongoClient.connect(url, paramsM, function(err, db) {
           if (err) throw err;
@@ -56,7 +54,7 @@
                 dateEvent.setMinutes(0);
                 dateEvent.setSeconds(0);
                 dateEvent.setMilliseconds(0);
-                if(dateEvent.getTime() <= yersteday.getTime()){
+                if(dateEvent.getTime() <= today.getTime()){
                   countEventsToUpdate++;
                   let eventId = new require('mongodb').ObjectID(event._id);
                   dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 2}}, {upsert: true}, function(err, result) {
@@ -68,7 +66,7 @@
             }
 
             console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
-            console.log("Eventos da data: "+ yersteday.toLocaleDateString() + " finalizados com sucesso. ");
+            console.log("Eventos com data menor que "+ today.toLocaleDateString() + " finalizados com sucesso. ");
             nextRun = new Date();
             nextRun.setDate(nextRun.getDate()+1);
             console.log("Próximo processamento: "+ nextRun.toLocaleDateString());
