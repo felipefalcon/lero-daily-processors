@@ -6,6 +6,7 @@
 	const MongoClient = mongo.MongoClient;
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
+  const scheduleEnvVar = process.env.CRON_JOB || '*/10 * * * * *';
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
@@ -79,6 +80,6 @@
       }
   }
 
-  schedule.scheduleJob(process.env.CRON_JOB, function(){
+  schedule.scheduleJob(scheduleEnvVar, function(){
     processRun();
   });
