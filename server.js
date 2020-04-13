@@ -9,31 +9,18 @@
   const scheduleEnvVar = process.env.CRON_JOB || '*/10 * * * * *';
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
-  // Configurações também para as duas datas estarem com horário, minutos, segundos, milisegundos iguais
   let nextRun = new Date();
-  let today = new Date();
-  today.setHours(0);
-  today.setMinutes(0);
-  today.setSeconds(0);
-  today.setMilliseconds(0);
-  nextRun.setHours(0);
-  nextRun.setMinutes(0);
-  nextRun.setSeconds(0);
-  nextRun.setMilliseconds(0);
-
 
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
   function processRun() {
-      today = new Date();
-      today.setHours(0);
-      today.setMinutes(0);
-      today.setSeconds(0);
-      today.setMilliseconds(0);
+      let todayDate = new Date();
+      let monthString = (todayDate.getMonth()+1) < 10 ? "0" : "";
+      let todayDateNumber = new Number(todayDate.getFullYear()+monthString+(todayDate.getMonth()+1)+""+todayDate.getDate());
 
-      if (today.toLocaleDateString() == nextRun.toLocaleDateString()) {
+      if (todayDate.toLocaleDateString() == nextRun.toLocaleDateString()) {
 
         let countEventsToUpdate = 0;
-        console.log("\nRodando processo na data de "+ today.toLocaleDateString() + " ..."); 
+        console.log("\nRodando processo na data de "+ todayDate.toLocaleDateString() + " ..."); 
 
         MongoClient.connect(url, paramsM, function(err, db) {
           if (err) throw err;
@@ -47,13 +34,11 @@
               for(i = 0; i < result.length; ++i){
                 let event = result[i];
                 let dateEvent = new Date(event.data);
-                dateEvent.setHours(0);
-                dateEvent.setMinutes(0);
-                dateEvent.setSeconds(0);
-                dateEvent.setMilliseconds(0);
-                if(dateEvent.getTime() < today.getTime()){
+                let monthStringEvent = (dateEvent.getMonth()+1) < 10 ? "0" : "";
+                let dateEventNumber = new Number(dateEvent.getFullYear()+monthStringEvent+(dateEvent.getMonth()+1)+""+(dateEvent.getDate()+1));
+                if(dateEventNumber < todayDateNumber){
                   countEventsToUpdate++;
-                  console.log("\nFinalizando eventos de datas anteriores a "+ today.toLocaleDateString() + " ..."); 
+                  console.log("\nFinalizando eventos de datas anteriores a "+ todayDate.toLocaleDateString() + " ..."); 
                   let eventId = new require('mongodb').ObjectID(event._id);
                   dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 2}}, {upsert: true}, function(err, result) {
                     if (err) throw err;
@@ -65,7 +50,7 @@
 
             if(countEventsToUpdate > 0){
               console.log(countEventsToUpdate+ " evento(s) teve/tiveram seu status atualizado. ");
-              console.log("Eventos com data menor que "+ today.toLocaleDateString() + " finalizados com sucesso. ");
+              console.log("Eventos com data menor que "+ todayDate.toLocaleDateString() + " finalizados com sucesso. ");
             }else{
               console.log("Não há eventos para finalizar. ");
             }
