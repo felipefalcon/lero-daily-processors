@@ -14,6 +14,7 @@
   // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
   function processRun() {
       let todayDate = new Date();
+      todayDate.setHours(todayDate.getHours()-3);
       let monthString = (todayDate.getMonth()+1) < 10 ? "0" : "";
       let todayDateNumber = new Number(todayDate.getFullYear()+monthString+(todayDate.getMonth()+1)+""+todayDate.getDate());
 
