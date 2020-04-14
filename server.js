@@ -41,7 +41,7 @@
                   countEventsToUpdate++;
                   console.log("\nFinalizando eventos de datas anteriores a "+ todayDate.toLocaleDateString() + " ..."); 
                   let eventId = new require('mongodb').ObjectID(event._id);
-                  dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 2}}, {upsert: true}, function(err, result) {
+                  dbo.collection("events").updateOne({_id: eventId}, {$set: {status: 1}}, {upsert: true}, function(err, result) {
                     if (err) throw err;
                   });
                 }
