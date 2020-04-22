@@ -7,12 +7,13 @@
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
   const scheduleEnvVar = process.env.CRON_JOB || '*/10 * * * * *';
+  const scheduleEnvVarStatus = process.env.CRON_JOB2 || '*/10 * * * * *';
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   let nextRun = new Date();
 
-  // Funcção que roda para verificar se a data de hoje é igual ao da próxima vez de processar
-  function processRun() {
+  // Função que roda para verificar se a data de hoje é igual ao da próxima vez de processar
+  function eventsFinalizeProcessRun() {
       let todayDate = new Date();
       todayDate.setHours(todayDate.getHours()-3);
       let monthString = (todayDate.getMonth()+1) < 10 ? "0" : "";
@@ -66,6 +67,20 @@
       }
   }
 
+  // Função que roda para trocar os status de online dos usuários
+  function changeStatusUsersProcessRun() {
+			dbo.collection("users").updateOne({online: 1}, {$set: 	{ online: 0 }}, function(err, result) {
+				if (err) throw err;
+				db.close();
+			});
+  }
+
+
+
   schedule.scheduleJob(scheduleEnvVar, function(){
-    processRun();
+    eventsFinalizeProcessRun();
+  });
+
+  schedule.scheduleJob(scheduleEnvVarStatus, function(){
+    changeStatusUsersProcessRun();
   });
