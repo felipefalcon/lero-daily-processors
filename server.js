@@ -70,7 +70,7 @@
   function changeStatusUsersProcessRun() {
     MongoClient.connect(url, paramsM, function(err, db) {
       var dbo = db.db(dbName);
-			dbo.collection("users").updateOne({online: 1}, {$set: 	{ online: 0 }}, {upsert: true}, function(err, result) {
+			dbo.collection("users").updateMany({online: 1}, {$set: 	{ online: 0 }}, {upsert: true}, function(err, result) {
 				if (err) throw err;
 				db.close();
       });
