@@ -1,4 +1,3 @@
-  
   var mongo = require('mongodb'); 
   var schedule = require('node-schedule');
 
@@ -69,10 +68,13 @@
 
   // Função que roda para trocar os status de online dos usuários
   function changeStatusUsersProcessRun() {
+    MongoClient.connect(url, paramsM, function(err, db) {
+      var dbo = db.db(dbName);
 			dbo.collection("users").updateOne({online: 1}, {$set: 	{ online: 0 }}, function(err, result) {
 				if (err) throw err;
 				db.close();
-			});
+      });
+    });
   }
 
 
