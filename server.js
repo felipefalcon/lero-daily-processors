@@ -5,8 +5,8 @@
 	const MongoClient = mongo.MongoClient;
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
-  const scheduleEnvVar = process.env.CRON_JOB || '*/10 * * * * *';
-  const scheduleEnvVarStatus = process.env.CRON_JOB2 || '*/10 * * * * *';
+  const scheduleEnvVar = process.env.CRON_JOB || '*/2 * * * *';
+  const scheduleEnvVarStatus = process.env.CRON_JOB2 || '*/2 * * * *';
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   let nextRun = new Date();
