@@ -1,6 +1,8 @@
   var mongo = require('mongodb'); 
   var schedule = require('node-schedule');
 
+  var moment = require('moment');
+
   const dbName = "leRo_DB";
 	const MongoClient = mongo.MongoClient;
   const url = "mongodb+srv://tcc2020:zDOo5kKVvZ0JMzAJ@lero-vjuos.gcp.mongodb.net/test?retryWrites=true&w=majority";
@@ -15,8 +17,6 @@
   function eventsFinalizeProcessRun() {
       let todayDate = new Date();
       todayDate.setHours(todayDate.getHours()-3);
-      let monthString = (todayDate.getMonth()+1) < 10 ? "0" : "";
-      let todayDateNumber = new Number(todayDate.getFullYear()+monthString+(todayDate.getMonth()+1)+""+todayDate.getDate());
 
       if (todayDate.toLocaleDateString() == nextRun.toLocaleDateString()) {
 
@@ -29,15 +29,16 @@
 
           dbo.collection("events").find({status: {$eq: 0}}, {projection: {status: 1, data: 1}}).toArray(function(err, result) {
             if (err) throw err;
-
+            // console.log(result);
+            // console.log(moment().format("yyyyMMDD"));
             if(result){
               let i = 0;
               for(i = 0; i < result.length; ++i){
                 let event = result[i];
-                let dateEvent = new Date(event.data);
-                let monthStringEvent = (dateEvent.getMonth()+1) < 10 ? "0" : "";
-                let dateEventNumber = new Number(dateEvent.getFullYear()+monthStringEvent+(dateEvent.getMonth()+1)+""+(dateEvent.getDate()+1));
-                if(dateEventNumber < todayDateNumber){
+                let dateEvent = moment(event.data).format("yyyyMMDD");
+                console.log(dateEvent);
+                console.log(moment().format("yyyyMMDD"));
+                if(dateEvent < moment().format("yyyyMMDD")){
                   countEventsToUpdate++;
                   console.log("\nFinalizando eventos de datas anteriores a "+ todayDate.toLocaleDateString() + " ..."); 
                   let eventId = new require('mongodb').ObjectID(event._id);
