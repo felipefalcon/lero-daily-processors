@@ -99,7 +99,7 @@
           for(i = 0; i < userLength; ++i){
             let user = result[i];
             usersResult++;
-            if(user.reports.length >= 2){
+            if(user.reports.length >= 6){
               userToInactivate++;
               let userId = new require('mongodb').ObjectID(user._id);
               dbo.collection("users").updateOne({_id: userId}, {$set: {status_account: true}}, {upsert: true}, function(err, result) {
