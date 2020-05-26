@@ -9,6 +9,7 @@
   const paramsM = { useNewUrlParser: true, useUnifiedTopology: true };
   const scheduleEnvVar = process.env.CRON_JOB || '0 * * * *';
   const scheduleEnvVarStatus = process.env.CRON_JOB2 || '* * * * *';
+  const scheduleEnvVarReport = process.env.CRON_JOB3 || '0 0 * * *';
 
   // Variáveis para guardar o dia de hoje e o próximo dia a processar (Next Run começa com a data de hoje e ao processar uma vez é setada ao outra dia)
   let nextRun = new Date();
@@ -78,7 +79,41 @@
     });
   }
 
+  // Função que roda para inativar os usuários que foram denunciados
+  function inactiveReportedUsersProcessRun() {
+    let userToInactivate = 0;
+    let usersResult = 0;
+    MongoClient.connect(url, paramsM, function(err, db) {
+      var dbo = db.db(dbName);
+			// dbo.collection("users").updateMany({reports : { $exists: true, $gt: {$size: 2} }}, {$set: 	{ status_account: true }}, function(err, result) {
+      //   if (err) throw err;
+      //   console.log("\n[BLOQUEIO] " + result.modifiedCount + " usuários foram bloqueados \n");
+			// 	db.close();
+      // });
 
+      dbo.collection("users").find({reports : { $exists: true}, status_account: false}, {projection: {_id: 1, reports: 1}}).toArray(function(err, result) {
+        if (err) throw err;
+        if(result){
+          let i = 0;
+          let userLength = result.length;
+          for(i = 0; i < userLength; ++i){
+            let user = result[i];
+            usersResult++;
+            if(user.reports.length >= 2){
+              userToInactivate++;
+              let userId = new require('mongodb').ObjectID(user._id);
+              dbo.collection("users").updateOne({_id: userId}, {$set: {status_account: true}}, {upsert: true}, function(err, result) {
+                if (err) throw err;
+              });
+            }
+          } 
+          if(i+1 == usersResult) db.close();
+        }
+        console.log("\n[BLOQUEIO] " + userToInactivate + " usuários foram bloqueados \n");
+      });
+
+    });
+  }
 
   schedule.scheduleJob(scheduleEnvVar, function(){
     eventsFinalizeProcessRun();
@@ -88,5 +123,10 @@
     changeStatusUsersProcessRun();
   });
 
+  schedule.scheduleJob(scheduleEnvVarReport, function(){
+    inactiveReportedUsersProcessRun();
+  });
+
   eventsFinalizeProcessRun();
   changeStatusUsersProcessRun();
+  inactiveReportedUsersProcessRun();
